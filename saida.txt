@@ -1,0 +1,3 @@
+Lbf: 120.5 dB
+Lb: 145.8 dB
+Mecanismo predominante: Troposcatter

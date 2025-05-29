@@ -1,14 +1,21 @@
 #include "InputManager.hpp"
+#include "OutputManager.hpp"
+#include <string>
 
 int main() {
-    // Acessa a instância Singleton do InputManager
     InputManager& inputManager = InputManager::getInstance();
+    OutputManager output;
 
-    // Lê os inputs do usuário
     inputManager.readInputs();
-
-    // Imprime os valores lidos
     inputManager.printInputs();
+
+    // Simulando os resultados
+    double Lbf = 120.5;
+    double Lb = 145.8;
+    std::string mecanismoPredominante = "Troposcatter";
+
+    output.printResults(Lbf, Lb, mecanismoPredominante);
+    output.saveResultsToFile("saida.txt", Lbf, Lb, mecanismoPredominante);
 
     return 0;
 }

@@ -106,21 +106,6 @@
 	<storageModule moduleId="cdtBuildSystem" version="4.0.0">
 		<project id="ITUR2001.cdt.managedbuild.target.gnu.exe.1258240932" name="Executable" projectType="cdt.managedbuild.target.gnu.exe"/>
 	</storageModule>
-	<storageModule moduleId="scannerConfiguration">
-		<autodiscovery enabled="true" problemReportingEnabled="true" selectedProfileId=""/>
-		<scannerConfigBuildInfo instanceId="cdt.managedbuild.config.gnu.exe.debug.174587183;cdt.managedbuild.config.gnu.exe.debug.174587183.;cdt.managedbuild.tool.gnu.c.compiler.exe.debug.958790639;cdt.managedbuild.tool.gnu.c.compiler.input.1069544313">
-			<autodiscovery enabled="true" problemReportingEnabled="true" selectedProfileId=""/>
-		</scannerConfigBuildInfo>
-		<scannerConfigBuildInfo instanceId="cdt.managedbuild.config.gnu.exe.release.356321865;cdt.managedbuild.config.gnu.exe.release.356321865.;cdt.managedbuild.tool.gnu.cpp.compiler.exe.release.863479830;cdt.managedbuild.tool.gnu.cpp.compiler.input.888880824">
-			<autodiscovery enabled="true" problemReportingEnabled="true" selectedProfileId=""/>
-		</scannerConfigBuildInfo>
-		<scannerConfigBuildInfo instanceId="cdt.managedbuild.config.gnu.exe.release.356321865;cdt.managedbuild.config.gnu.exe.release.356321865.;cdt.managedbuild.tool.gnu.c.compiler.exe.release.18600299;cdt.managedbuild.tool.gnu.c.compiler.input.671044915">
-			<autodiscovery enabled="true" problemReportingEnabled="true" selectedProfileId=""/>
-		</scannerConfigBuildInfo>
-		<scannerConfigBuildInfo instanceId="cdt.managedbuild.config.gnu.exe.debug.174587183;cdt.managedbuild.config.gnu.exe.debug.174587183.;cdt.managedbuild.tool.gnu.cpp.compiler.exe.debug.242764733;cdt.managedbuild.tool.gnu.cpp.compiler.input.676244133">
-			<autodiscovery enabled="true" problemReportingEnabled="true" selectedProfileId=""/>
-		</scannerConfigBuildInfo>
-	</storageModule>
 	<storageModule moduleId="org.eclipse.cdt.core.LanguageSettingsProviders"/>
 	<storageModule moduleId="org.eclipse.cdt.make.core.buildtargets"/>
 	<storageModule moduleId="refreshScope" versionNumber="2">
@@ -131,4 +116,6 @@
 			<resource resourceType="PROJECT" workspacePath="/ITUR2001"/>
 		</configuration>
 	</storageModule>
+	<storageModule moduleId="scannerConfiguration"/>
+	<storageModule moduleId="org.eclipse.cdt.core.pathentry"/>
 </cproject>
