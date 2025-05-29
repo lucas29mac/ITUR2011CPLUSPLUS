@@ -1,6 +1,8 @@
 #include "InputManager.hpp"
 #include <iostream>
 #include "GeoCoordinate.hpp"
+#include <fstream>
+#include <sstream>
 
 
 GeoCoordinate InputManager::getTxCoordinate() const {
@@ -28,33 +30,46 @@ InputManager& InputManager::getInstance() {
 
 // Método para ler inputs do usuário
 void InputManager::readInputs() {
-    std::cout << "Latitude do transmissor: ";
-    std::cin >> lat_tx;
-    std::cout << "Longitude do transmissor: ";
-    std::cin >> lon_tx;
-    std::cout << "Latitude do receptor: ";
-    std::cin >> lat_rx;
-    std::cout << "Longitude do receptor: ";
-    std::cin >> lon_rx;
-    std::cout << "Frequência (MHz): ";
-    std::cin >> f_MHz;
-    std::cout << "Percentual de tempo (p%): ";
-    std::cin >> p;
-    std::cout << "Altura da antena transmissora (m): ";
-    std::cin >> h_tx;
-    std::cout << "Altura da antena receptora (m): ";
-    std::cin >> h_rx;
-    std::cout << "Código do clima: ";
-    std::cin >> clima;
-    std::cout << "Arquivo com perfil de terreno: ";
-    std::cin >> perfil_terreno_file;
-
-    std::cout << "Arquivos foEs (4 arquivos separados por espaço): ";
-    foEs_files.resize(4);
-    for (auto& file : foEs_files) {
-        std::cin >> file;
+    std::ifstream infile("input.txt");
+    if (!infile) {
+        std::cerr << "Erro ao abrir arquivo input.txt\n";
+        exit(1);
     }
-}
+
+    auto readValue = [](std::ifstream& in, auto& var) {
+           std::string line;
+           std::getline(in, line);
+           std::istringstream iss(line);
+           iss >> var;
+       };
+
+       readValue(infile, lat_tx);
+       readValue(infile, lon_tx);
+       readValue(infile, lat_rx);
+       readValue(infile, lon_rx);
+       readValue(infile, f_MHz);
+       readValue(infile, p);
+       readValue(infile, h_tx);
+       readValue(infile, h_rx);
+       readValue(infile, clima);
+
+       // Lê a linha do arquivo de perfil do terreno
+       std::string line;
+       std::getline(infile, line);
+       std::istringstream iss1(line);
+       iss1 >> perfil_terreno_file;
+
+       // Lê a linha dos 4 arquivos foEs
+       std::getline(infile, line);
+       std::istringstream iss2(line);
+       foEs_files.resize(4);
+       for (auto& file : foEs_files) {
+           iss2 >> file;
+       }
+
+       infile.close();
+       std::cout << "Dados carregados com sucesso de entrada.txt\n";
+   }
 
 // Método para imprimir os inputs lidos
 void InputManager::printInputs() const {

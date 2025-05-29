@@ -1,15 +1,16 @@
 #include "InputManager.hpp"
 #include "OutputManager.hpp"
 #include "GeoCalculator.hpp"
+#include "TerrainReader.hpp"
 
-#include <cstdlib>  // srand, rand
-#include <ctime>    // time
+#include <cstdlib>   // srand, rand
+#include <ctime>     // time
 #include <fstream>
 #include <iostream>
 #include <string>
 
 int main() {
-    // --- Gera arquivo perfil.txt com terreno aleatório ---
+    // --- Geração do arquivo de perfil de terreno sintético (perfil.txt) ---
     {
         std::ofstream file("perfil.txt");
         if (!file) {
@@ -17,45 +18,58 @@ int main() {
             return 1;
         }
 
-        std::srand(std::time(nullptr)); // inicializa semente do rand
-
+        std::srand(std::time(nullptr)); // inicializa a semente aleatória
         const int nPoints = 100;
+
         for (int i = 0; i < nPoints; ++i) {
-            double height = std::rand() % 501; // gera valor de 0 a 500 metros
+            double height = std::rand() % 501; // altura entre 0 e 500 metros
             file << height << "\n";
         }
 
         std::cout << "Arquivo perfil.txt criado com " << nPoints << " pontos de altura aleatória.\n";
     }
 
-    // --- Fluxo principal do programa ---
-
+    // --- Leitura de entradas e inicialização de coordenadas ---
     InputManager& inputManager = InputManager::getInstance();
     OutputManager output;
 
-    // Lê entradas
     inputManager.readInputs();
     inputManager.printInputs();
 
-    // Obtém coordenadas
     GeoCoordinate tx = inputManager.getTxCoordinate();
     GeoCoordinate rx = inputManager.getRxCoordinate();
 
-    // Instancia o geocalculador com coordenadas
+    // --- Leitura real de elevação via GDAL para o transmissor ---
+    try {
+        TerrainReader terrain("/home/imbeluser/Documents/compartilhada/rj/SF-23-Z-B.tif");
+
+        double elevationTx = terrain.getElevation(tx.latitude, tx.longitude);
+        double elevationRx = terrain.getElevation(rx.latitude, rx.longitude);
+
+        std::cout << "Elevação no transmissor (" << tx.latitude << ", " << tx.longitude << "): "
+                  << elevationTx << " m\n";
+
+        std::cout << "Elevação no receptor (" << rx.latitude << ", " << rx.longitude << "): "
+                  << elevationRx << " m\n";
+    } catch (const std::exception& e) {
+        std::cerr << "Erro ao acessar dados de elevação: " << e.what() << std::endl;
+        return 1;
+    }
+
+    // --- Cálculos geográficos principais ---
     GeoCalculator calculator(tx.latitude, tx.longitude, rx.latitude, rx.longitude);
 
-    // Mostra distância e ponto médio
     double distanceKm = calculator.computeDistanceKm();
     auto [midLat, midLon] = calculator.computeMidpoint();
 
-    std::cout << "Distância: " << distanceKm << " km" << std::endl;
+    std::cout << "Distância: " << distanceKm << " km\n";
     std::cout << "Ponto médio: (" << midLat << ", " << midLon << ")\n";
 
-    // Usa o arquivo perfil.txt gerado
+    // --- Leitura de perfil e visualização ---
     calculator.loadTerrainProfile("perfil.txt");
     calculator.drawPath2D();
 
-    // Simulando resultados de perda
+    // --- Simulação e saída dos resultados finais ---
     double Lbf = 120.5;
     double Lb = 145.8;
     std::string mecanismoPredominante = "Troposcatter";
