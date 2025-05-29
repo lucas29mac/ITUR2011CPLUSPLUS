@@ -3,6 +3,7 @@
 
 #include <string>
 #include <vector>
+#include "GeoCoordinate.hpp"
 
 class InputManager {
 public:
@@ -10,6 +11,11 @@ public:
 
     void readInputs();                   // Leitura dos inputs via terminal
     void printInputs() const;           // Impressão dos valores lidos
+
+
+    GeoCoordinate getTxCoordinate() const;
+    GeoCoordinate getRxCoordinate() const;
+    std::string getTerrainProfileFile() const;
 
 private:
     InputManager() = default;           // Construtor privado

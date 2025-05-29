@@ -1,5 +1,19 @@
 #include "InputManager.hpp"
 #include <iostream>
+#include "GeoCoordinate.hpp"
+
+
+GeoCoordinate InputManager::getTxCoordinate() const {
+    return GeoCoordinate(lat_tx, lon_tx);
+}
+
+GeoCoordinate InputManager::getRxCoordinate() const {
+    return GeoCoordinate(lat_rx, lon_rx);
+}
+
+std::string InputManager::getTerrainProfileFile() const {
+    return perfil_terreno_file;
+}
 
 // Inicialização do ponteiro estático
 InputManager* InputManager::instance = nullptr;
