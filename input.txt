@@ -1,11 +1,11 @@
--22.9               						# Latitude do transmissor (Rio de Janeiro)
--43.2               						# Longitude do transmissor
--23.0               						# Latitude do receptor (ex: outro ponto próximo)
--43.4               						# Longitude do receptor
+-22.99619               						# Latitude do transmissor (Rio de Janeiro)
+-43.2226               						# Longitude do transmissor
+-22.9430          						    # Latitude do receptor (ex: outro ponto próximo)
+-43.1897               						# Longitude do receptor
 900                 						# Frequência (MHz)
 50                  						# Percentual de tempo (p%)
-30                  						# Altura da antena transmissora (m)
-20                  						# Altura da antena receptora (m)
+2                  						    # Altura da antena transmissora (m)
+2                  							# Altura da antena receptora (m)
 22                  						# Código do clima
-perfil.txt          						# Arquivo com perfil de terreno
+rj/SF-23-Z-B.tif     						# Arquivo com perfil de terreno
 foEs1.txt foEs2.txt foEs3.txt foEs4.txt     # Arquivos foEs

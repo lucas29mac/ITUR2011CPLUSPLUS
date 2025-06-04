@@ -11,20 +11,11 @@ using namespace GeographicLib;
 GeoCalculator::GeoCalculator(double latTx_, double lonTx_, double latRx_, double lonRx_)
     : latTx(latTx_), lonTx(lonTx_), latRx(latRx_), lonRx(lonRx_) {}
 
-void GeoCalculator::loadTerrainProfile(const std::string& filename) {
-    std::ifstream file(filename);
-    if (!file) {
-        std::cerr << "Erro ao abrir arquivo de terreno: " << filename << std::endl;
-        return;
-    }
-
-    double height;
-    while (file >> height) {
-        terrainHeights.push_back(height);
-    }
-
-    file.close();
+void GeoCalculator::setTerrainProfile(const std::vector<double>& profile) {
+    terrainProfile = profile;
 }
+
+
 
 double GeoCalculator::computeDistanceKm() const {
     const Geodesic& geod = Geodesic::WGS84();
@@ -40,34 +31,31 @@ std::pair<double, double> GeoCalculator::computeMidpoint() const {
 }
 
 void GeoCalculator::drawPath2D() const {
-    if (terrainHeights.empty()) {
+    if (terrainProfile.empty()) {
         std::cerr << "Perfil de terreno não carregado.\n";
         return;
     }
 
-    const int maxHeight = *std::max_element(terrainHeights.begin(), terrainHeights.end());
-    const int minHeight = *std::min_element(terrainHeights.begin(), terrainHeights.end());
+    const int maxHeight = *std::max_element(terrainProfile.begin(), terrainProfile.end());
+    const int minHeight = *std::min_element(terrainProfile.begin(), terrainProfile.end());
     const int plotHeight = 20;
-    const int plotWidth = terrainHeights.size();
+    const int plotWidth = terrainProfile.size();
 
     std::vector<std::string> canvas(plotHeight, std::string(plotWidth, ' '));
 
-    // Normaliza alturas para o gráfico
     std::vector<int> normalizedHeights;
-    for (double h : terrainHeights) {
+    for (double h : terrainProfile) {
         int y = static_cast<int>(
             ((h - minHeight) / (maxHeight - minHeight + 1e-6)) * (plotHeight - 1)
         );
-        normalizedHeights.push_back(plotHeight - 1 - y);  // invertido (topo = 0)
+        normalizedHeights.push_back(plotHeight - 1 - y);
     }
 
-    // Desenha linhas entre os pontos
     for (size_t i = 0; i < normalizedHeights.size() - 1; ++i) {
         int x0 = i, x1 = i + 1;
         int y0 = normalizedHeights[i];
         int y1 = normalizedHeights[i + 1];
 
-        // Interpola entre os dois pontos
         int dx = x1 - x0;
         int dy = y1 - y0;
         int steps = std::max(std::abs(dx), std::abs(dy));
@@ -85,4 +73,5 @@ void GeoCalculator::drawPath2D() const {
 
     std::cout << "T" << std::string(plotWidth - 2, '-') << "R\n";
 }
+
 

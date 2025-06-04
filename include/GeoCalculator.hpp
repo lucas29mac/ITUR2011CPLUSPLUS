@@ -9,7 +9,8 @@ class GeoCalculator {
 public:
     GeoCalculator(double latTx, double lonTx, double latRx, double lonRx);
 
-    void loadTerrainProfile(const std::string& filename);
+    void setTerrainProfile(const std::vector<double>& profile);
+
 
     double computeDistanceKm() const;
     std::pair<double, double> computeMidpoint() const;
@@ -17,9 +18,9 @@ public:
     void drawPath2D() const;
 
 private:
-    double latTx, lonTx;
-    double latRx, lonRx;
-    std::vector<double> terrainHeights;
+    double latTx, lonTx, latRx, lonRx;
+    std::vector<double> terrainProfile;
+
 };
 
 #endif /* GEOCALCULATOR_HPP_ */

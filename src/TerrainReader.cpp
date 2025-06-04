@@ -1,48 +1,53 @@
 #include "TerrainReader.hpp"
+#include <gdal.h>
 #include <gdal_priv.h>
-#include <cpl_conv.h>
 #include <stdexcept>
-#include <iostream>
 
-TerrainReader::TerrainReader(const std::string& filepath) {
+TerrainReader::TerrainReader(const std::string& filepath)
+    : dataset(nullptr) {
     GDALAllRegister();
-    loadDataset(filepath);
+    dataset = static_cast<GDALDataset*>(GDALOpen(filepath.c_str(), GA_ReadOnly));
+    if (!dataset) {
+        throw std::runtime_error("Falha ao abrir arquivo de terreno");
+    }
+    dataset->GetGeoTransform(geoTransform);
+    rasterXSize = dataset->GetRasterXSize();
+    rasterYSize = dataset->GetRasterYSize();
 }
 
-void TerrainReader::loadDataset(const std::string& filepath) {
-    dataset = (void*) GDALOpen(filepath.c_str(), GA_ReadOnly);
-    if (!dataset) {
-        throw std::runtime_error("Erro ao abrir o arquivo de terreno: " + filepath);
+TerrainReader::~TerrainReader() {
+    if (dataset) {
+        GDALClose(dataset);
     }
-
-    GDALDataset* gdalDataset = static_cast<GDALDataset*>(dataset);
-
-    if (gdalDataset->GetGeoTransform(geoTransform) != CE_None) {
-        throw std::runtime_error("Erro ao obter transformações geográficas.");
-    }
-
-    rasterXSize = gdalDataset->GetRasterXSize();
-    rasterYSize = gdalDataset->GetRasterYSize();
 }
 
 double TerrainReader::getElevation(double latitude, double longitude) const {
-    GDALDataset* gdalDataset = static_cast<GDALDataset*>(dataset);
-    GDALRasterBand* band = gdalDataset->GetRasterBand(1);
-
-    int pixel = static_cast<int>((longitude - geoTransform[0]) / geoTransform[1]);
-    int line  = static_cast<int>((latitude  - geoTransform[3]) / geoTransform[5]);
-
-    if (pixel < 0 || pixel >= rasterXSize || line < 0 || line >= rasterYSize) {
-        std::cerr << "Coordenada fora dos limites do raster.\n";
-        return -9999;
+    if (!dataset) {
+        throw std::runtime_error("Dataset não carregado");
     }
 
-    float value = 0.0;
-    CPLErr err = band->RasterIO(GF_Read, pixel, line, 1, 1, &value, 1, 1, GDT_Float32, 0, 0);
+    // Conversão de coordenadas geográficas para pixels
+    double x = (longitude - geoTransform[0]) / geoTransform[1];
+    double y = (latitude - geoTransform[3]) / geoTransform[5];
+
+    if (x < 0 || x >= rasterXSize || y < 0 || y >= rasterYSize) {
+        return 0.0; // Fora dos limites do arquivo
+    }
+
+    float elevation = 0.0f;
+    GDALRasterBand* band = dataset->GetRasterBand(1);
+    CPLErr err = band->RasterIO(GF_Read,
+                               static_cast<int>(x),
+                               static_cast<int>(y),
+                               1, 1,
+                               &elevation,
+                               1, 1,
+                               GDT_Float32,
+                               0, 0);
+
     if (err != CE_None) {
-        std::cerr << "Erro ao ler dado de elevação.\n";
-        return -9999;
+        throw std::runtime_error("Erro ao ler dados de elevação");
     }
 
-    return static_cast<double>(value);
+    return static_cast<double>(elevation);
 }
